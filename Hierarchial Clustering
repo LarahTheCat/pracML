@@ -1,0 +1,12 @@
+from scipy.cluster.hierarchy import dendrogram, linkage
+from sklearn.preprocessing import StandardScaler
+X = iris.data
+X_scaled = StandardScaler().fit_transform(X)
+linked = linkage(X_scaled, method='ward')
+plt.figure(figsize=(10, 7))
+dendrogram(linked, orientation='top', labels=iris.target, distance_sort='descending', show_leaf_counts=True)
+plt.title("Hierarchical Clustering Dendrogram")
+
+
+plt.show()
+
