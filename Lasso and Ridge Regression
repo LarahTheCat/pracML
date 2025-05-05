@@ -1,0 +1,56 @@
+import pandas as pd 
+import numpy as np 
+
+# Read File Contents 
+dataset = pd.read_csv('housing_FULL.csv') 
+# Extract data for our use 
+cols_to_use = ['Suburb','Rooms','Type','Method','SellerG','Regionname','Propertycount','Distance','CouncilArea'
+ ,'Bedroom2','Bathroom','Car','Landsize','BuildingArea','Price'] 
+dataset = dataset[cols_to_use] 
+cols_to_fill_zero = ['Propertycount','Distance','Bedroom2','Bathroom','Car'] 
+dataset[cols_to_fill_zero] = dataset[cols_to_fill_zero].fillna(0) 
+dataset['Landsize'] = dataset['Landsize'].fillna(dataset.Landsize.mean()) 
+dataset['BuildingArea'] = dataset['BuildingArea'].fillna(dataset.BuildingArea.mean()) 
+# Drop all rows containing NA in any column 
+dataset.dropna(inplace=True) 
+# Convert text data to number by using get_dummies method 
+dataset = pd.get_dummies(dataset,drop_first=True) 
+# Bifurgate Depenedent and independent cloumns (Features, output) 
+X = dataset.drop('Price',axis=1) 
+y = dataset['Price'] 
+# Divide data set into training and testing dataset 
+from sklearn.model_selection import train_test_split 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=2) 
+from sklearn.linear_model import LinearRegression 
+reg = LinearRegression().fit(X_train, y_train) 
+# Training Accuracy 
+train_acc = reg.score(X_train,y_train) 
+print("-> Training Accuracy : ",train_acc) 
+# Testing Accuracy 
+test_acc = reg.score(X_test,y_test) 
+print("-> Testing Accuracy : ",test_acc) 
+# Using L1 Regularization 
+from sklearn import linear_model 
+
+lasso_reg = linear_model.Lasso(alpha=51, max_iter=100, tol=0.1) 
+lasso_reg.fit(X_train, y_train) 
+  
+print("Training accuracy after L1 regularization: ",lasso_reg.score(X_train,y_train) )
+
+print("Testing accuracy after L1 regularization",lasso_reg.score(X_test, y_test)) 
+#--------------------------------------------------------- 
+
+# Using L2 Regularization 
+# printing all zero coefficients 
+zero_coefficient = [] 
+for i in lasso_reg.coef_: 
+  if i == 0: 
+    zero_coefficient.append(i) 
+  print(len(zero_coefficient)) 
+from sklearn.linear_model import Ridge 
+ridge_reg= Ridge(alpha=50, max_iter=100, tol=0.1) 
+ridge_reg.fit(X_train, y_train) 
+#  
+print("Training accuracy after L2 Regularization: ",ridge_reg.score(X_train, y_train) )
+#
+print("Testing accuracy after L2 Regularization: ",ridge_reg.score(X_test, y_test))
