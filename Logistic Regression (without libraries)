@@ -1,0 +1,28 @@
+from sklearn.model_selection import train_test_split 
+from sklearn import datasets,linear_model,metrics 
+import numpy as np 
+diabetes = datasets.load_diabetes() 
+X = diabetes.data 
+y = diabetes.target 
+threshold = y.mean() 
+y = (y>threshold).astype(int) 
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.3,random_state=0) 
+m,n = X_train.shape 
+w = np.zeros(n) + 0.3 
+b = 0.5 
+epochs = 1000 
+learning_rate = 0.5 
+def sigmoid(z): 
+  return 1/(1+np.exp(-z)) 
+for _ in range(epochs): 
+  z = np.dot(X_train,w)+b 
+  predictions = sigmoid(z) 
+  dw = (1/m) * np.dot(X_train.T,(predictions-y_train)) 
+  db = (1/m) * np.sum(predictions-y_train) 
+  w -= learning_rate*dw 
+  b -= learning_rate*db 
+z_test = np.dot(X_test,w)+b 
+y_pred = sigmoid(z_test) 
+y_pred_class = [1 if p>0.5 else 0 for p in y_pred] 
+accuracy = np.mean(y_pred_class == y_test) 
+print(f"Accuracy : {accuracy:.4f}")
