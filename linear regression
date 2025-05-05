@@ -1,0 +1,19 @@
+import pandas as pd 
+import seaborn as sns 
+from sklearn.linear_model import LinearRegression 
+from sklearn.model_selection import train_test_split 
+from sklearn.metrics import mean_squared_error 
+import matplotlib.pyplot as plt 
+# Load example data 
+data = sns.load_dataset("diamonds").dropna().sample(1000) 
+X = data[["carat"]] 
+y = data["price"] 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) 
+model = LinearRegression() 
+model.fit(X_train, y_train) 
+y_pred = model.predict(X_test) 
+print("MSE:", mean_squared_error(y_test, y_pred),"\n") 
+plt.scatter(X_test, y_test, color='green', label='Actual') 
+plt.plot(X_test, y_pred, color='blue', label='Predicted') 
+plt.legend() 
+plt.show()
